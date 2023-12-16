@@ -1,8 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
-    // Bind the button click event to the new function
-    document.getElementById('checkClipboardButton').addEventListener('click', function () {
-        checkClipboardForNumber();
-    });
+    checkClipboardForNumber();
 });
 
 function checkClipboardForNumber() {
@@ -12,11 +9,11 @@ function checkClipboardForNumber() {
             const phoneNumber = text.trim();
 
             if (isValidNumber(phoneNumber)) {
+                // Clear existing logs on success
+                clearLogs();
                 displayLink(phoneNumber);
-                displayCountdownAndNavigate(phoneNumber);
             } else {
-                // Show input box for entering phone number
-                showInputBox();
+                displayResult(false);
             }
         })
         .catch(err => {
@@ -32,65 +29,55 @@ function isValidNumber(number) {
 
 function displayLink(phoneNumber) {
     const link = `https://wa.me/${phoneNumber}`;
-    const message = encodeURIComponent(`Chat with the copied number: ${phoneNumber}`);
+    const message = encodeURIComponent("Chat with the copied number");
 
-    // Open WhatsApp directly with the chat link in a new tab
-    window.open(`${link}?text=${message}`, "_blank");
-}
+    // Display the countdown
+    displayCountdown(3, phoneNumber);
 
-function showInputBox() {
-    const inputContainer = document.getElementById('inputContainer');
-    inputContainer.style.display = 'block';
-}
-
-function generateLink() {
-    const phoneNumberInput = document.getElementById('phoneNumberInput');
-    const phoneNumber = phoneNumberInput.value.trim();
-
-    if (isValidNumber(phoneNumber)) {
-        displayCountdownAndNavigate(phoneNumber);
-    } else {
-        alert('Please enter a valid 10-digit phone number.');
-    }
+    // Open WhatsApp directly with the chat link after 3 seconds
+    setTimeout(() => {
+        window.open(`${link}?text=${message}`, "_blank");
+    }, 3000);
 }
 
 function displayResult(foundNumber) {
     const resultContainer = document.getElementById('result');
-    const logElement = document.createElement('div');
-    logElement.classList.add('log');
 
-    if (foundNumber) {
-        logElement.innerHTML = '<p>Number found in clipboard!</p>';
-    } else {
+    if (!foundNumber) {
+        // Display no valid number found message
+        const logElement = document.createElement('div');
+        logElement.classList.add('log');
         logElement.innerHTML = '<p>No valid number found in clipboard.</p>';
+        resultContainer.appendChild(logElement);
     }
-
-    resultContainer.appendChild(logElement);
+    
+    // Clear everything on re-navigation
+    window.onbeforeunload = function () {
+        resultContainer.innerHTML = '';
+    };
 }
 
-function displayCountdownAndNavigate(phoneNumber) {
-    let seconds = 3;
+function clearLogs() {
+    const resultContainer = document.getElementById('result');
+    resultContainer.innerHTML = '';
+}
 
-    const countdownInterval = setInterval(function () {
-        const resultContainer = document.getElementById('result');
-        const countdownElement = document.createElement('div');
-        countdownElement.classList.add('log');
+function displayCountdown(seconds, phoneNumber) {
+    const resultContainer = document.getElementById('result');
+    const countdownElement = document.createElement('div');
+    countdownElement.classList.add('log', 'countdown');
 
-        if (seconds > 0) {
-            countdownElement.innerHTML = `<p>Navigating to ${phoneNumber} in ${seconds} seconds...</p>`;
-        } else {
+    let counter = seconds;
+
+    const countdownInterval = setInterval(() => {
+        countdownElement.innerHTML = `<p>Navigating to ${phoneNumber} in ${counter} seconds...</p>`;
+        counter--;
+
+        if (counter < 0) {
             clearInterval(countdownInterval);
-            countdownElement.innerHTML = `<p>Navigating to ${phoneNumber}...</p>`;
-            navigateToWhatsApp(phoneNumber);
+            resultContainer.removeChild(countdownElement);
         }
-
-        resultContainer.appendChild(countdownElement);
-        seconds--;
     }, 1000);
-}
 
-function navigateToWhatsApp(phoneNumber) {
-    const link = `https://wa.me/${phoneNumber}`;
-    // Open WhatsApp directly with the chat link in a new tab
-    window.open(`${link}?text=Chat with the copied number: ${phoneNumber}`, "_blank");
+    resultContainer.appendChild(countdownElement);
 }
