@@ -33,14 +33,6 @@ function displayLink(phoneNumber) {
 
     // Display the countdown
     displayCountdown(3, phoneNumber);
-
-    // Open WhatsApp directly with the chat link after 3 seconds
-    setTimeout(() => {
-        window.open(`${link}?text=${message}`, "_blank");
-
-        // Clear everything on re-navigation
-        clearLogs();
-    }, 3000);
 }
 
 function displayResult(foundNumber) {
@@ -74,6 +66,14 @@ function displayCountdown(seconds, phoneNumber) {
         if (counter < 0) {
             clearInterval(countdownInterval);
             resultContainer.removeChild(countdownElement);
+
+            // Open WhatsApp directly with the chat link after countdown
+            const link = `https://wa.me/${phoneNumber}`;
+            const message = encodeURIComponent("Chat with the copied number");
+            window.open(`${link}?text=${message}`, "_blank");
+
+            // Clear everything on re-navigation
+            clearLogs();
         }
     }, 1000);
 
