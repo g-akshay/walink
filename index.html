@@ -10,7 +10,21 @@
 <body class="dark-theme">
     <div id="app" class="container">
         <h1>WhatsApp Link Generator</h1>
-        <button onclick="checkClipboardForNumber()" class="generate-button">Generate Link</button>
+
+        <!-- Check Clipboard Button -->
+        <button id="checkClipboardButton" class="generate-button" onclick="checkClipboardForNumber()">Check Clipboard for Phone Number</button>
+
+        <!-- Divider -->
+        <hr class="divider">
+
+        <!-- Input Box and Generate Link Button -->
+        <div id="inputContainer">
+            <label for="phoneNumberInput">Enter Phone Number:</label>
+            <input type="tel" id="phoneNumberInput" placeholder="Enter phone number">
+            <button class="generate-button" onclick="generateLink()">Generate Link</button>
+        </div>
+
+        <!-- Result Container -->
         <div id="result" class="result-container"></div>
     </div>
     <script src="app.js"></script>
