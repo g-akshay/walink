@@ -47,4 +47,3 @@ function displayResult(foundNumber) {
 
     resultContainer.appendChild(logElement);
 }
- .
