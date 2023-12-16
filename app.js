@@ -64,4 +64,13 @@ function displayCountdownAndNavigate(phoneNumber) {
             navigateToWhatsApp(phoneNumber);
         }
 
-        resultContainer.appendChild(co
+        resultContainer.appendChild(countdownElement);
+        seconds--;
+    }, 1000);
+}
+
+function navigateToWhatsApp(phoneNumber) {
+    const link = `https://wa.me/${phoneNumber}`;
+    // Open WhatsApp directly with the chat link in a new tab
+    window.open(`${link}?text=Chat with the copied number: ${phoneNumber}`, "_blank");
+}
