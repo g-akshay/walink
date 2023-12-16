@@ -29,10 +29,10 @@ function isValidNumber(number) {
 
 function displayLink(phoneNumber) {
     const link = `https://wa.me/${phoneNumber}`;
-    const message = encodeURIComponent("Chat with the copied number");
+    const message = encodeURIComponent("Hi 👋, Chat with the copied number");
 
     // Display the countdown
-    displayCountdown(3, phoneNumber);
+    displayCountdown(3, phoneNumber, link, message);
 }
 
 function displayResult(foundNumber) {
@@ -52,7 +52,7 @@ function clearLogs() {
     resultContainer.innerHTML = '';
 }
 
-function displayCountdown(seconds, phoneNumber) {
+function displayCountdown(seconds, phoneNumber, link, message) {
     const resultContainer = document.getElementById('result');
     const countdownElement = document.createElement('div');
     countdownElement.classList.add('log', 'countdown');
@@ -68,8 +68,6 @@ function displayCountdown(seconds, phoneNumber) {
             resultContainer.removeChild(countdownElement);
 
             // Open WhatsApp directly with the chat link after countdown
-            const link = `https://wa.me/${phoneNumber}`;
-            const message = encodeURIComponent("Chat with the copied number");
             window.open(`${link}?text=${message}`, "_blank");
 
             // Display the navigation log
