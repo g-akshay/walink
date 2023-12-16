@@ -29,7 +29,7 @@ function isValidNumber(number) {
 
 function displayLink(phoneNumber) {
     const link = `https://wa.me/${phoneNumber}`;
-    const message = encodeURIComponent("Hi 👋, Chat with the copied number");
+    const message = encodeURIComponent("Hi 👋");
 
     // Display the countdown
     displayCountdown(3, phoneNumber, link, message);
