@@ -37,6 +37,9 @@ function displayLink(phoneNumber) {
     // Open WhatsApp directly with the chat link after 3 seconds
     setTimeout(() => {
         window.open(`${link}?text=${message}`, "_blank");
+
+        // Clear everything on re-navigation
+        clearLogs();
     }, 3000);
 }
 
@@ -50,11 +53,6 @@ function displayResult(foundNumber) {
         logElement.innerHTML = '<p>No valid number found in clipboard.</p>';
         resultContainer.appendChild(logElement);
     }
-    
-    // Clear everything on re-navigation
-    window.onbeforeunload = function () {
-        resultContainer.innerHTML = '';
-    };
 }
 
 function clearLogs() {
