@@ -72,10 +72,21 @@ function displayCountdown(seconds, phoneNumber) {
             const message = encodeURIComponent("Chat with the copied number");
             window.open(`${link}?text=${message}`, "_blank");
 
+            // Display the navigation log
+            displayNavigationLog(phoneNumber);
+
             // Clear everything on re-navigation
             clearLogs();
         }
     }, 1000);
 
     resultContainer.appendChild(countdownElement);
+}
+
+function displayNavigationLog(phoneNumber) {
+    const resultContainer = document.getElementById('result');
+    const logElement = document.createElement('div');
+    logElement.classList.add('log');
+    logElement.innerHTML = `<p>Navigated to ${phoneNumber}!</p>`;
+    resultContainer.appendChild(logElement);
 }
