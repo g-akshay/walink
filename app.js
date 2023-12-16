@@ -10,7 +10,7 @@ function checkClipboardForNumber() {
 
             if (isValidNumber(phoneNumber)) {
                 displayLink(phoneNumber);
-                displayCountdown(phoneNumber);
+                displayCountdownAndNavigate(phoneNumber);
             } else {
                 displayResult(false);
             }
@@ -30,7 +30,7 @@ function displayLink(phoneNumber) {
     const link = `https://wa.me/${phoneNumber}`;
     const message = encodeURIComponent(`Chat with the copied number: ${phoneNumber}`);
 
-    // Open WhatsApp directly with the chat link
+    // Open WhatsApp directly with the chat link in a new tab
     window.open(`${link}?text=${message}`, "_blank");
 }
 
@@ -48,7 +48,7 @@ function displayResult(foundNumber) {
     resultContainer.appendChild(logElement);
 }
 
-function displayCountdown(phoneNumber) {
+function displayCountdownAndNavigate(phoneNumber) {
     let seconds = 3;
 
     const countdownInterval = setInterval(function () {
@@ -58,7 +58,7 @@ function displayCountdown(phoneNumber) {
 
         if (seconds > 0) {
             countdownElement.innerHTML = `<p>Navigating to ${phoneNumber} in ${seconds} seconds...</p>`;
-        } else { 
+        } else {
             clearInterval(countdownInterval);
             countdownElement.innerHTML = `<p>Navigating to ${phoneNumber}...</p>`;
             navigateToWhatsApp(phoneNumber);
@@ -71,5 +71,8 @@ function displayCountdown(phoneNumber) {
 
 function navigateToWhatsApp(phoneNumber) {
     const link = `https://wa.me/${phoneNumber}`;
-    window.location.href = `${link}?text=Chat with the copied number: ${phoneNumber}`;
+    // Open WhatsApp directly with the chat link in a new tab after waiting for 3 seconds
+    setTimeout(function () {
+        window.open(`${link}?text=Chat with the copied number: ${phoneNumber}`, "_blank");
+    }, 3000);
 }
