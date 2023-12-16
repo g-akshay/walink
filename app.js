@@ -1,5 +1,8 @@
 document.addEventListener('DOMContentLoaded', function () {
-    checkClipboardForNumber();
+    // Bind the button click event to the new function
+    document.getElementById('checkClipboardButton').addEventListener('click', function () {
+        checkClipboardForNumber();
+    });
 });
 
 function checkClipboardForNumber() {
@@ -12,7 +15,8 @@ function checkClipboardForNumber() {
                 displayLink(phoneNumber);
                 displayCountdownAndNavigate(phoneNumber);
             } else {
-                displayResult(false);
+                // Show input box for entering phone number
+                showInputBox();
             }
         })
         .catch(err => {
@@ -32,6 +36,22 @@ function displayLink(phoneNumber) {
 
     // Open WhatsApp directly with the chat link in a new tab
     window.open(`${link}?text=${message}`, "_blank");
+}
+
+function showInputBox() {
+    const inputContainer = document.getElementById('inputContainer');
+    inputContainer.style.display = 'block';
+}
+
+function generateLink() {
+    const phoneNumberInput = document.getElementById('phoneNumberInput');
+    const phoneNumber = phoneNumberInput.value.trim();
+
+    if (isValidNumber(phoneNumber)) {
+        displayCountdownAndNavigate(phoneNumber);
+    } else {
+        alert('Please enter a valid 10-digit phone number.');
+    }
 }
 
 function displayResult(foundNumber) {
