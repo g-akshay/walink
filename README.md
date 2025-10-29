@@ -16,7 +16,7 @@ Check out the live demo: [WhatsApp Link Generator Demo](https://g-akshay.github.
 
 1. Open the app.
 2. If a valid phone number is found in the clipboard, the link is generated automatically after a countdown.
-3. If no valid number is found, you can manually enter a phone number and click "Generate Link."
+3. If no valid number is found, you can manually enter a phone number and click "Generate Link." (Buggy)
 
 ## API Used
 
