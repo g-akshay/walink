@@ -4,7 +4,7 @@ A simple Progressive Web App (PWA) to generate WhatsApp chat links from clipboar
 
 ## Demo
 
-Check out the live demo: [WhatsApp Link Generator Demo](https://your-username.github.io/your-repository)
+Check out the live demo: [WhatsApp Link Generator Demo](https://g-akshay.github.io/walink/)
 
 ## Features
 
