@@ -101,6 +101,29 @@ walink/
 
 ---
 
+## Updating the installed PWA
+
+Once installed, the app caches itself and won't automatically pick up new versions. To force an update:
+
+**Android (Chrome)**
+
+1. Open the installed WaLink app
+2. Tap the **⋮ menu** (top right) → **Settings** → **Site settings**
+3. Tap **Clear & reset** (or **Delete and reset**)
+4. Close and re-launch the app — it will fetch the latest version
+
+> If the ⋮ menu isn't visible, long-press the app icon on your home screen → **App info** → **Clear cache**, then re-launch.
+
+**iOS (Safari)**
+
+1. Go to **Settings** → **Safari** → **Advanced** → **Website Data**
+2. Search for `g-akshay.github.io` and swipe to delete
+3. Re-open the app from your home screen
+
+**Quick version check** — the version number shown at the bottom of the app (e.g. `v1.0.2`) tells you exactly which build is running.
+
+---
+
 ## Tech
 
 - Vanilla HTML5 · CSS3 · ES6 — no frameworks, no bundler
