@@ -124,8 +124,6 @@ const resultArea      = document.getElementById('resultArea');
 const resultLink      = document.getElementById('resultLink');
 const copyBtn         = document.getElementById('copyBtn');
 const errorMsg        = document.getElementById('errorMsg');
-const locationPill    = document.getElementById('locationPill');
-const locationPillTxt = document.getElementById('locationPillText');
 const clipboardBanner  = document.getElementById('clipboardBanner');
 const clipboardNumber  = document.getElementById('clipboardNumber');
 const clipboardUseBtn  = document.getElementById('clipboardUseBtn');
@@ -136,8 +134,10 @@ const installToastClose = document.getElementById('installToastClose');
 
 // --------------- Init ---------------
 document.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem('walink_country');
+  const initial = (saved && CC_MAP[saved]) ? CC_MAP[saved] : COUNTRIES[0];
+  setCountry(initial);
   renderCountryList(COUNTRIES);
-  detectLocation();
   checkClipboard();
   registerSW();
   setupInstallPrompt();
@@ -148,36 +148,6 @@ function registerSW() {
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js').catch(() => {});
   }
-}
-
-// --------------- Geolocation / IP fallback ---------------
-function detectLocation() {
-  showLocationPill('Detecting your location…');
-
-  // Try browser geolocation (only gives coords, need reverse geo)
-  // Use ip-api as lightweight, no-key fallback
-  fetch('https://ip-api.com/json/?fields=countryCode,status')
-    .then(r => r.json())
-    .then(data => {
-      if (data.status === 'success' && data.countryCode) {
-        const country = CC_MAP[data.countryCode];
-        if (country) {
-          setCountry(country);
-          showLocationPill(`Detected: ${country.flag} ${country.name}`);
-          setTimeout(() => { locationPill.hidden = true; }, 3000);
-          return;
-        }
-      }
-      locationPill.hidden = true;
-    })
-    .catch(() => {
-      locationPill.hidden = true;
-    });
-}
-
-function showLocationPill(text) {
-  locationPillTxt.textContent = text;
-  locationPill.hidden = false;
 }
 
 // --------------- Clipboard ---------------
@@ -261,6 +231,7 @@ function setCountry(c) {
   selectedCountry = c;
   selectedFlag.textContent = c.flag;
   selectedDial.textContent = c.dial;
+  localStorage.setItem('walink_country', c.code);
 }
 
 function openDropdown() {

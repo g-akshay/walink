@@ -33,7 +33,7 @@ Send the `index.html` to a friend, open it in a browser, or install it to your h
 | | |
 |---|---|
 | **No contact saving** | Start a chat by typing any number — WhatsApp opens directly |
-| **Smart country detection** | Auto-detects your country via IP and pre-fills the dial code |
+| **Remembers your country** | Saves your last selected dial code — no re-selecting on every visit |
 | **Clipboard detection** | Tap the invite chip to paste a copied number in one step |
 | **PWA — installable** | Add to home screen on iOS & Android; works offline |
 | **Single HTML file** | Zero dependencies, zero build step — share a single file |
@@ -60,8 +60,8 @@ Or download `index.html` and open it directly in any browser.
 ## How it works
 
 ```
-1. App detects your country code from your IP address
-2. Paste or type any phone number
+1. Your last-used country dial code is pre-selected (defaults to India on first use)
+2. Paste or type any phone number — country code is auto-detected if included
 3. Tap "Open WhatsApp" → wa.me link opens the chat instantly
 ```
 
@@ -127,7 +127,7 @@ Once installed, the app caches itself and won't automatically pick up new versio
 ## Tech
 
 - Vanilla HTML5 · CSS3 · ES6 — no frameworks, no bundler
-- [ip-api.com](https://ip-api.com) — lightweight, key-free IP geolocation
+- `localStorage` — persists last selected country across sessions
 - Service Workers — offline caching via PWA
 
 ---

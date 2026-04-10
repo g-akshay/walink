@@ -334,33 +334,6 @@ body::before {
 .country-item-name { flex: 1; color: var(--text-primary); font-weight: 500; }
 .country-item-dial { color: var(--wa-green); font-weight: 600; font-size: .82rem; }
 
-/* ---------- Location Pill ---------- */
-.location-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
-  border-radius: 100px;
-  background: rgba(37,211,102,.1);
-  border: 1px solid rgba(37,211,102,.2);
-  font-size: .72rem;
-  font-weight: 500;
-  color: var(--wa-green);
-  width: fit-content;
-  margin-top: -6px;
-}
-
-.location-pill[hidden] { display: none; }
-
-.location-pill-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--wa-green);
-  animation: pulse 1.6s infinite;
-  flex-shrink: 0;
-}
-
 /* ---------- CTA Button ---------- */
 .cta-btn {
   display: flex;
