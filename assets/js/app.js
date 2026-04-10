@@ -86,6 +86,27 @@ const COUNTRIES = [
 // Country code → Country mapping
 const CC_MAP = Object.fromEntries(COUNTRIES.map(c => [c.code, c]));
 
+// Sorted longest-dial-code first for unambiguous prefix matching
+// (+91 must be tried before +1, +380 before +38, etc.)
+const COUNTRIES_BY_DIAL_LEN = [...COUNTRIES].sort((a, b) => b.dial.length - a.dial.length);
+
+// --------------- Country Code Detection ---------------
+// Given a raw digit string, returns { country, local } or null.
+// Triggers only when the digit string is plausibly international:
+//   • user typed a '+' prefix, OR
+//   • digit count exceeds the expected local length for the selected country
+function detectCountryCode(digits) {
+  for (const country of COUNTRIES_BY_DIAL_LEN) {
+    const code = country.dial.slice(1); // strip '+'
+    if (!digits.startsWith(code)) continue;
+    const local = digits.slice(code.length);
+    if (local.length >= 6 && local.length <= 15) {
+      return { country, local };
+    }
+  }
+  return null;
+}
+
 // --------------- State ---------------
 let selectedCountry = COUNTRIES[0]; // default India
 let dropdownOpen    = false;
@@ -199,13 +220,14 @@ function readClipboard() {
 clipboardInvite && clipboardInvite.addEventListener('click', readClipboard);
 
 clipboardUseBtn && clipboardUseBtn.addEventListener('click', () => {
-  const raw = clipboardNumber.textContent.trim().replace(/\D/g, '');
-  // Strip leading country code if it matches selected
-  const dialDigits = selectedCountry.dial.replace('+', '');
-  const number = raw.startsWith(dialDigits) && raw.length > selectedCountry.digits
-    ? raw.slice(dialDigits.length)
-    : raw;
-  phoneInput.value = number;
+  const digits = clipboardNumber.textContent.trim().replace(/\D/g, '');
+  const detected = detectCountryCode(digits);
+  if (detected) {
+    setCountry(detected.country);
+    phoneInput.value = detected.local;
+  } else {
+    phoneInput.value = digits;
+  }
   clipboardBanner.hidden = true;
   phoneInput.focus();
   validateAndPreview();
@@ -283,9 +305,23 @@ document.addEventListener('click', e => {
 
 // --------------- Phone Input ---------------
 phoneInput.addEventListener('input', () => {
-  // Strip non-digits
-  const raw = phoneInput.value.replace(/\D/g, '');
-  phoneInput.value = raw;
+  const raw = phoneInput.value;
+  const hasPlus = raw.startsWith('+');
+  const digits = raw.replace(/\D/g, '');
+
+  // Attempt country detection when the input looks international:
+  // explicit '+' prefix, or digit count exceeds the selected country's expected length.
+  if (digits.length >= 8 && (hasPlus || digits.length > selectedCountry.digits)) {
+    const detected = detectCountryCode(digits);
+    if (detected) {
+      setCountry(detected.country);
+      phoneInput.value = detected.local;
+      validateAndPreview();
+      return;
+    }
+  }
+
+  phoneInput.value = digits;
   validateAndPreview();
 });
 
