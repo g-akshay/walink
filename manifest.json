@@ -2,8 +2,8 @@
   "name": "WaLink – WhatsApp Link Generator",
   "short_name": "WaLink",
   "description": "Instantly open a WhatsApp chat with any phone number. No saving contacts needed.",
-  "start_url": "/",
-  "scope": "/",
+  "start_url": "/walink/",
+  "scope": "/walink/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#0d1117",
@@ -28,7 +28,7 @@
   "shortcuts": [
     {
       "name": "Open WaLink",
-      "url": "/",
+      "url": "/walink/",
       "description": "Quickly generate a WhatsApp link"
     }
   ]

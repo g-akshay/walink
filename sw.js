@@ -3,8 +3,8 @@
    Caches index.html, styles.css, app.js, icons for offline
    ====================================================== */
 
-const CACHE = 'walink-v2';
-const PRECACHE = ['/', '/index.html', '/assets/css/styles.css', '/assets/js/app.js', '/assets/icons/icon.png', '/assets/icons/icon-192.png', '/assets/icons/icon-512.png', '/manifest.json'];
+const CACHE = 'walink-v3';
+const PRECACHE = ['/walink/', '/walink/index.html', '/walink/assets/css/styles.css', '/walink/assets/js/app.js', '/walink/assets/icons/icon.png', '/walink/assets/icons/icon-192.png', '/walink/assets/icons/icon-512.png', '/walink/manifest.json'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(PRECACHE)).then(() => self.skipWaiting()));
