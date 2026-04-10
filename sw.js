@@ -1,18 +1,27 @@
 /* ======================================================
-   WaLink – Service Worker (sw.js)
-   Caches index.html, styles.css, app.js, icons for offline
+   WaLink – Service Worker
    ====================================================== */
 
-const CACHE = 'walink-v3';
-const PRECACHE = ['/walink/', '/walink/index.html', '/walink/assets/css/styles.css', '/walink/assets/js/app.js', '/walink/assets/icons/icon.png', '/walink/assets/icons/icon-192.png', '/walink/assets/icons/icon-512.png', '/walink/manifest.json'];
+const CACHE = 'walink-v4';
+const PRECACHE = [
+  '/walink/',
+  '/walink/manifest.json',
+  '/walink/assets/icons/icon-192-any.png',
+  '/walink/assets/icons/icon-512-any.png'
+];
 
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(PRECACHE)).then(() => self.skipWaiting()));
+  e.waitUntil(
+    caches.open(CACHE)
+      .then(c => c.addAll(PRECACHE))
+      .then(() => self.skipWaiting())
+  );
 });
 
 self.addEventListener('activate', e => {
   e.waitUntil(
-    caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
+    caches.keys()
+      .then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
       .then(() => self.clients.claim())
   );
 });
