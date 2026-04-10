@@ -1,40 +1,42 @@
-# WhatsApp Link Generator
+# WaLink — WhatsApp Link Generator
 
-A simple Progressive Web App (PWA) to generate WhatsApp chat links from clipboard content or manually entered phone numbers.
+A beautiful, minimal Progressive Web App (PWA) to instantly start a WhatsApp chat with any phone number, without needing to save them as a contact first.
 
 ## Demo
 
-Check out the live demo: [WhatsApp Link Generator Demo](https://g-akshay.github.io/walink/)
+**[👉 Try WaLink Live Demo](https://g-akshay.github.io/walink/)**
 
 ## Features
 
-- Generates WhatsApp chat links with a customizable message.
-- Supports automatic detection of phone numbers in the clipboard.
-- Provides a countdown before navigating to the generated link.
+- **No Contact Saving:** Start a chat instantly by just typing the number.
+- **Smart Geolocation:** Automatically detects your country and sets the correct dial code.
+- **Clipboard Detection:** Detects phone numbers copied to your clipboard for 1-click chatting.
+- **Progressive Web App (PWA):** Installable on iOS and Android. Works offline and feels like a native app.
+- **Pixel-Perfect UI:** Branded, clean, dark-themed responsive design with subtle micro-animations.
 
-## Usage
+## How it works
 
-1. Open the app.
-2. If a valid phone number is found in the clipboard, the link is generated automatically after a countdown.
-3. If no valid number is found, you can manually enter a phone number and click "Generate Link." (Buggy)
+1. The app detects your country code automatically using IP geolocation.
+2. If you have a phone number copied, it will prompt you to use it.
+3. Otherwise, simply enter the phone number.
+4. Tap "Open WhatsApp" and it will instantly launch the WhatsApp app or WhatsApp Web to that specific chat.
 
-## API Used
+## Local Development
 
-This project utilizes the [WhatsApp API](https://wa.me/) to generate chat links. The API allows you to create links with predefined messages, making it easier for users to initiate a conversation on WhatsApp.
+Just serve the static files:
 
-## References
+```bash
+# Using python
+python -m http.server
+# Or using Node.js
+npx serve .
+```
 
-- [WhatsApp API Documentation](https://wa.me/)
-- [Progressive Web App (PWA) Documentation](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps)
+## Technologies
 
-## Use Cases
-
-- Quickly initiate a chat with a copied phone number.
-- Streamline communication by providing pre-filled messages.
-
-## Contributing
-
-Feel free to contribute to this project. You can fork the repository and submit pull requests for improvements or bug fixes.
+- Vanilla HTML5, CSS3, ES6 JavaScript
+- IP-API for lightweight geolocation
+- Local Service Workers for PWA support
 
 ## License
 

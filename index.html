@@ -1,32 +1,1332 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
-    <link rel="manifest" href="/manifest.json">
-    <title>WhatsApp Link Generator</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="description" content="WaLink — Instantly open a WhatsApp chat with any phone number. No saving contacts needed." />
+  <meta name="theme-color" content="#075E54" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="WaLink" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="WaLink — WhatsApp Link Generator" />
+  <meta property="og:description" content="Instantly open a WhatsApp chat with any phone number. No saving contacts." />
+  <meta property="og:image" content="assets/icons/icon-512.png" />
+  <meta property="og:type" content="website" />
+
+  <title>WaLink — WhatsApp Link Generator</title>
+
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/png" href="assets/icons/icon.png" />
+  <link rel="apple-touch-icon" href="assets/icons/icon-192.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+/* ============================================================
+   WaLink – styles
+   Design tokens → Base → Components → Utilities → Animations
+   ============================================================ */
+
+/* ---------- Design Tokens ---------- */
+:root {
+  --wa-green:        #25D366;
+  --wa-dark-green:   #075E54;
+  --wa-teal:         #128C7E;
+  --wa-light-green:  #DCF8C6;
+
+  --bg:              #0d1117;
+  --surface:         #161b22;
+  --surface-2:       #1f2937;
+  --surface-3:       #242c38;
+  --border:          rgba(255,255,255,.08);
+  --border-focus:    rgba(37,211,102,.5);
+
+  --text-primary:    #f0f6fc;
+  --text-secondary:  #8b949e;
+  --text-muted:      #484f58;
+
+  --radius-sm:       10px;
+  --radius-md:       16px;
+  --radius-lg:       24px;
+  --radius-xl:       32px;
+
+  --shadow-card:     0 8px 32px rgba(0,0,0,.45), 0 1px 0 rgba(255,255,255,.04) inset;
+  --shadow-btn:      0 4px 20px rgba(37,211,102,.35);
+  --shadow-btn-hover:0 6px 28px rgba(37,211,102,.5);
+
+  --transition:      .2s cubic-bezier(.4,0,.2,1);
+
+  --safe-top:        env(safe-area-inset-top, 0px);
+  --safe-bottom:     env(safe-area-inset-bottom, 0px);
+}
+
+/* ---------- Reset / Base ---------- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text-primary);
+  min-height: 100dvh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Subtle animated gradient background */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% -20%, rgba(37,211,102,.12), transparent),
+    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(7,94,84,.15), transparent);
+  pointer-events: none;
+  z-index: 0;
+}
+
+#app {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  max-width: 430px;
+  margin: 0 auto;
+  padding-top: calc(var(--safe-top) + 12px);
+  padding-bottom: calc(var(--safe-bottom) + 24px);
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+/* ---------- Header ---------- */
+.app-header {
+  padding: 12px 4px 16px;
+}
+
+.logo-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-icon {
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(135deg, var(--wa-teal), var(--wa-dark-green));
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  color: white;
+  flex-shrink: 0;
+  box-shadow: 0 2px 12px rgba(37,211,102,.3);
+}
+
+.logo-icon svg {
+  width: 26px;
+  height: 26px;
+}
+
+.logo-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.brand-name {
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -.02em;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.brand-tagline {
+  font-size: .72rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  letter-spacing: .02em;
+}
+
+/* ---------- Main ---------- */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ---------- Card ---------- */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  animation: slideUp .4s cubic-bezier(.2,.8,.4,1) both;
+}
+
+.card-inner {
+  padding: 24px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.card-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -.025em;
+  line-height: 1.2;
+  color: var(--text-primary);
+}
+
+.card-subtitle {
+  font-size: .82rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-top: -10px;
+}
+
+/* ---------- Input Group (country + phone) ---------- */
+.input-group {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
+  transition: border-color var(--transition), box-shadow var(--transition);
+  position: relative;
+  overflow: visible;
+}
+
+.input-group:focus-within {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(37,211,102,.12);
+}
+
+/* Country select */
+.country-select-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.country-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 10px 0 14px;
+  height: 100%;
+  min-height: 54px;
+  background: transparent;
+  border: none;
+  border-right: 1.5px solid var(--border);
+  cursor: pointer;
+  color: var(--text-primary);
+  font-family: inherit;
+  transition: background var(--transition);
+  border-radius: var(--radius-md) 0 0 var(--radius-md);
+  white-space: nowrap;
+}
+
+.country-btn:hover, .country-btn:focus-visible {
+  background: rgba(255,255,255,.05);
+  outline: none;
+}
+
+.country-flag { font-size: 1.3rem; line-height: 1; }
+
+.country-dial {
+  font-size: .85rem;
+  font-weight: 600;
+  color: var(--wa-green);
+  min-width: 36px;
+}
+
+.chevron {
+  width: 14px;
+  height: 14px;
+  color: var(--text-muted);
+  transition: transform var(--transition);
+  flex-shrink: 0;
+}
+
+.country-btn[aria-expanded="true"] .chevron {
+  transform: rotate(180deg);
+}
+
+/* Phone input */
+.phone-input {
+  flex: 1;
+  min-width: 0;
+  padding: 0 16px;
+  height: 54px;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 1.05rem;
+  font-weight: 500;
+  letter-spacing: .01em;
+  outline: none;
+  -webkit-appearance: none;
+}
+
+.phone-input::placeholder { color: var(--text-muted); font-weight: 400; }
+
+/* ---------- Country Dropdown ---------- */
+.country-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 100;
+  min-width: 280px;
+  max-width: 90vw;
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 16px 48px rgba(0,0,0,.6);
+  overflow: hidden;
+  animation: dropIn .18s cubic-bezier(.2,.8,.4,1) both;
+}
+
+.country-dropdown[hidden] { display: none; }
+
+.dropdown-search-wrap {
+  padding: 10px 10px 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.dropdown-search {
+  width: 100%;
+  padding: 8px 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: .85rem;
+  outline: none;
+  transition: border-color var(--transition);
+}
+
+.dropdown-search:focus { border-color: var(--border-focus); }
+.dropdown-search::placeholder { color: var(--text-muted); }
+
+.country-list {
+  list-style: none;
+  max-height: 260px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.country-list::-webkit-scrollbar { width: 4px; }
+.country-list::-webkit-scrollbar-track { background: transparent; }
+.country-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.country-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: background var(--transition);
+  font-size: .88rem;
+}
+
+.country-item:hover, .country-item.focused {
+  background: rgba(37,211,102,.1);
+}
+
+.country-item.selected {
+  background: rgba(37,211,102,.12);
+}
+
+.country-item-flag { font-size: 1.15rem; flex-shrink: 0; }
+.country-item-name { flex: 1; color: var(--text-primary); font-weight: 500; }
+.country-item-dial { color: var(--wa-green); font-weight: 600; font-size: .82rem; }
+
+/* ---------- Location Pill ---------- */
+.location-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 100px;
+  background: rgba(37,211,102,.1);
+  border: 1px solid rgba(37,211,102,.2);
+  font-size: .72rem;
+  font-weight: 500;
+  color: var(--wa-green);
+  width: fit-content;
+  margin-top: -6px;
+}
+
+.location-pill[hidden] { display: none; }
+
+.location-pill-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--wa-green);
+  animation: pulse 1.6s infinite;
+  flex-shrink: 0;
+}
+
+/* ---------- CTA Button ---------- */
+.cta-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 16px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--wa-green) 0%, #1ebe5d 100%);
+  color: #fff;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: .01em;
+  border: none;
+  cursor: pointer;
+  box-shadow: var(--shadow-btn);
+  transition: transform var(--transition), box-shadow var(--transition), filter var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,.15) 0%, transparent 60%);
+  border-radius: inherit;
+}
+
+.cta-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-btn-hover);
+}
+
+.cta-btn:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: var(--shadow-btn);
+}
+
+.cta-btn:disabled {
+  filter: saturate(.3) brightness(.6);
+  cursor: not-allowed;
+}
+
+.btn-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+/* ---------- Result Area ---------- */
+.result-area {
+  border-radius: var(--radius-sm);
+  background: rgba(37,211,102,.07);
+  border: 1px solid rgba(37,211,102,.2);
+  padding: 12px 14px;
+  animation: fadeIn .25s ease both;
+}
+
+.result-area[hidden] { display: none; }
+
+.result-link-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.result-link-label {
+  font-size: .72rem;
+  font-weight: 600;
+  color: var(--wa-green);
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.result-link {
+  flex: 1;
+  font-size: .82rem;
+  color: var(--wa-green);
+  text-decoration: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.result-link:hover { text-decoration: underline; }
+
+.copy-btn {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(37,211,102,.15);
+  border: 1px solid rgba(37,211,102,.25);
+  color: var(--wa-green);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: background var(--transition), transform var(--transition);
+}
+
+.copy-btn svg { width: 14px; height: 14px; }
+
+.copy-btn:hover { background: rgba(37,211,102,.25); }
+.copy-btn:active { transform: scale(.92); }
+
+.copy-btn.copied {
+  background: rgba(37,211,102,.3);
+  color: #fff;
+}
+
+/* ---------- Error ---------- */
+.error-msg {
+  font-size: .82rem;
+  color: #f87171;
+  background: rgba(248,113,113,.1);
+  border: 1px solid rgba(248,113,113,.2);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  animation: fadeIn .2s ease;
+}
+
+.error-msg[hidden] { display: none; }
+
+/* ---------- Clipboard Invite ---------- */
+.clipboard-invite {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 6px 12px;
+  border-radius: 100px;
+  border: 1px dashed var(--border);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: .78rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color .2s, color .2s;
+}
+
+.clipboard-invite:hover {
+  border-color: var(--wa-green);
+  color: var(--wa-green);
+}
+
+.clipboard-invite[hidden] { display: none; }
+
+/* ---------- Clipboard Banner ---------- */
+.clipboard-banner {
+  border-top: 1px solid var(--border);
+  background: rgba(37,211,102,.05);
+}
+
+.clipboard-banner[hidden] { display: none; }
+
+.clipboard-inner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+}
+
+.clipboard-icon {
+  width: 18px;
+  height: 18px;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.clipboard-label {
+  font-size: .7rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.clipboard-number {
+  font-size: .88rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.clipboard-use-btn {
+  margin-left: auto;
+  padding: 6px 14px;
+  border-radius: 100px;
+  background: var(--wa-green);
+  color: #fff;
+  font-family: inherit;
+  font-size: .78rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: filter var(--transition), transform var(--transition);
+  flex-shrink: 0;
+}
+
+.clipboard-use-btn:hover { filter: brightness(1.1); }
+.clipboard-use-btn:active { transform: scale(.94); }
+
+/* ---------- How It Works ---------- */
+.how-section {
+  padding: 4px 4px 0;
+}
+
+.how-title {
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.step-num {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(37,211,102,.12);
+  border: 1px solid rgba(37,211,102,.2);
+  color: var(--wa-green);
+  font-size: .75rem;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.step-text {
+  font-size: .83rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* ---------- Footer ---------- */
+.app-footer {
+  padding-top: 16px;
+  text-align: center;
+  font-size: .75rem;
+  color: var(--text-muted);
+}
+
+.app-footer a {
+  color: var(--wa-green);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.app-footer a:hover { text-decoration: underline; }
+.heart { color: #f87171; }
+
+/* ---------- Install Toast ---------- */
+.install-toast {
+  position: fixed;
+  bottom: calc(var(--safe-bottom) + 16px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 32px);
+  max-width: 398px;
+  z-index: 9999;
+  animation: slideUpToast .3s cubic-bezier(.2,.8,.4,1) both;
+}
+
+.install-toast[hidden] { display: none; }
+
+.install-toast-inner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 12px 14px;
+  box-shadow: 0 12px 40px rgba(0,0,0,.6);
+}
+
+.install-toast-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, #128C7E, #075E54);
+  display: grid;
+  place-items: center;
+  color: white;
+}
+
+.install-toast-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.install-toast-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.install-toast-text strong {
+  font-size: .85rem;
+  color: var(--text-primary);
+}
+
+.install-toast-text span {
+  font-size: .72rem;
+  color: var(--text-secondary);
+}
+
+.install-toast-btn {
+  padding: 7px 14px;
+  border-radius: 100px;
+  background: var(--wa-green);
+  color: #fff;
+  font-family: inherit;
+  font-size: .8rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.install-toast-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: .85rem;
+  cursor: pointer;
+  padding: 4px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+/* ---------- Keyframes ---------- */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes dropIn {
+  from { opacity: 0; transform: translateY(-8px) scale(.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideUpToast {
+  from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: .5; transform: scale(.7); }
+}
+
+@keyframes shake {
+  10%, 90%  { transform: translateX(-2px); }
+  20%, 80%  { transform: translateX(4px); }
+  30%, 50%, 70% { transform: translateX(-6px); }
+  40%, 60%  { transform: translateX(6px); }
+}
+
+/* ---------- Focus visible ---------- */
+:focus-visible {
+  outline: 2px solid var(--wa-green);
+  outline-offset: 2px;
+}
+
+/* ---------- Selection ---------- */
+::selection {
+  background: rgba(37,211,102,.3);
+  color: var(--text-primary);
+}
+
+/* ---------- Scrollbar (global) ---------- */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+  </style>
 </head>
-<body class="dark-theme">
-    <div id="app" class="container">
-        <h1>WhatsApp Link Generator</h1>
+<body>
 
-        <!-- Check Clipboard Button -->
-        <button id="checkClipboardButton" class="generate-button" onclick="checkClipboardForNumber()">Check Clipboard for Phone Number</button>
+  <div id="app">
 
-        <!-- Divider -->
-        <hr class="divider">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="logo-wrap">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M17.6 6.32A7.85 7.85 0 0 0 12.05 4C7.73 4 4.2 7.53 4.2 11.85a7.82 7.82 0 0 0 1.06 3.94L4 20l4.31-1.13a7.87 7.87 0 0 0 3.74.95h.01c4.32 0 7.84-3.53 7.84-7.85a7.82 7.82 0 0 0-2.3-5.65zM12.05 18.46a6.52 6.52 0 0 1-3.32-.91l-.24-.14-2.46.65.66-2.4-.16-.25a6.49 6.49 0 0 1-1-3.46c0-3.59 2.92-6.51 6.52-6.51a6.48 6.48 0 0 1 4.61 1.91 6.47 6.47 0 0 1 1.91 4.61c0 3.6-2.93 6.5-6.52 6.5zm3.57-4.88c-.2-.1-1.16-.57-1.34-.63-.18-.07-.31-.1-.44.1-.13.19-.5.63-.62.77-.11.13-.22.15-.42.05-.2-.1-.84-.31-1.6-.99a6.02 6.02 0 0 1-1.1-1.37c-.12-.2-.01-.3.09-.4.09-.09.2-.23.3-.35.1-.12.13-.2.2-.33.06-.13.03-.25-.02-.35-.05-.1-.44-1.05-.6-1.44-.16-.38-.32-.33-.44-.33-.11-.01-.24-.01-.37-.01-.13 0-.34.05-.52.25-.18.2-.68.66-.68 1.6s.7 1.86.79 1.99c.1.12 1.37 2.09 3.33 2.93.46.2.83.32 1.11.41.47.15.9.13 1.23.08.38-.06 1.16-.47 1.33-.93.16-.45.16-.84.11-.93-.05-.09-.18-.14-.38-.24z" fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="logo-text">
+          <span class="brand-name">WaLink</span>
+          <span class="brand-tagline">WhatsApp Link Generator</span>
+        </div>
+      </div>
+    </header>
 
-        <!-- Input Box and Generate Link Button -->
-        <div id="inputContainer">
-            <label for="phoneNumberInput">Enter Phone Number:</label>
-            <input type="tel" id="phoneNumberInput" placeholder="Enter phone number">
-            <button class="generate-button" onclick="generateLink()">Generate Link</button>
+    <!-- Main Card -->
+    <main class="main-content">
+      <div class="card">
+
+        <div class="card-inner">
+          <h1 class="card-title">Open WhatsApp Chat</h1>
+          <p class="card-subtitle">Enter a number to chat — no need to save contacts</p>
+
+          <!-- Phone Input Row -->
+          <div class="input-group" id="phoneInputGroup">
+            <div class="country-select-wrap" id="countrySelectWrap">
+              <button class="country-btn" id="countryBtn" aria-label="Select country" aria-expanded="false" aria-haspopup="listbox">
+                <span class="country-flag" id="selectedFlag">🇮🇳</span>
+                <span class="country-dial" id="selectedDial">+91</span>
+                <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+              </button>
+
+              <!-- Dropdown -->
+              <div class="country-dropdown" id="countryDropdown" role="listbox" aria-label="Country codes" hidden>
+                <div class="dropdown-search-wrap">
+                  <input class="dropdown-search" id="countrySearch" type="text" placeholder="Search country…" autocomplete="off" spellcheck="false" />
+                </div>
+                <ul class="country-list" id="countryList"></ul>
+              </div>
+            </div>
+
+            <input
+              class="phone-input"
+              id="phoneInput"
+              type="tel"
+              inputmode="numeric"
+              placeholder="Phone number"
+              autocomplete="tel-national"
+              maxlength="15"
+              aria-label="Phone number"
+            />
+          </div>
+
+          <!-- Clipboard invite (shown before permission is granted) -->
+          <button class="clipboard-invite" id="clipboardInvite" hidden aria-label="Paste a copied phone number">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
+            Paste a copied number
+          </button>
+
+          <!-- Location status pill -->
+          <div class="location-pill" id="locationPill" hidden>
+            <span class="location-pill-dot"></span>
+            <span id="locationPillText">Detecting your location…</span>
+          </div>
+
+          <!-- CTA Button -->
+          <button class="cta-btn" id="openChatBtn" aria-label="Open WhatsApp chat">
+            <svg class="btn-icon" viewBox="0 0 24 24" fill="none"><path d="M17.6 6.32A7.85 7.85 0 0 0 12.05 4C7.73 4 4.2 7.53 4.2 11.85a7.82 7.82 0 0 0 1.06 3.94L4 20l4.31-1.13a7.87 7.87 0 0 0 3.74.95h.01c4.32 0 7.84-3.53 7.84-7.85a7.82 7.82 0 0 0-2.3-5.65zM12.05 18.46a6.52 6.52 0 0 1-3.32-.91l-.24-.14-2.46.65.66-2.4-.16-.25a6.49 6.49 0 0 1-1-3.46c0-3.59 2.92-6.51 6.52-6.51a6.48 6.48 0 0 1 4.61 1.91 6.47 6.47 0 0 1 1.91 4.61c0 3.6-2.93 6.5-6.52 6.5zm3.57-4.88c-.2-.1-1.16-.57-1.34-.63-.18-.07-.31-.1-.44.1-.13.19-.5.63-.62.77-.11.13-.22.15-.42.05-.2-.1-.84-.31-1.6-.99a6.02 6.02 0 0 1-1.1-1.37c-.12-.2-.01-.3.09-.4.09-.09.2-.23.3-.35.1-.12.13-.2.2-.33.06-.13.03-.25-.02-.35-.05-.1-.44-1.05-.6-1.44-.16-.38-.32-.33-.44-.33-.11-.01-.24-.01-.37-.01-.13 0-.34.05-.52.25-.18.2-.68.66-.68 1.6s.7 1.86.79 1.99c.1.12 1.37 2.09 3.33 2.93.46.2.83.32 1.11.41.47.15.9.13 1.23.08.38-.06 1.16-.47 1.33-.93.16-.45.16-.84.11-.93-.05-.09-.18-.14-.38-.24z" fill="currentColor"/></svg>
+            <span>Open WhatsApp</span>
+          </button>
+
+          <!-- Result / feedback area -->
+          <div class="result-area" id="resultArea" hidden>
+            <div class="result-link-row">
+              <span class="result-link-label">Link</span>
+              <a class="result-link" id="resultLink" target="_blank" rel="noopener noreferrer"></a>
+              <button class="copy-btn" id="copyBtn" aria-label="Copy link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Error message -->
+          <div class="error-msg" id="errorMsg" hidden></div>
         </div>
 
-        <!-- Result Container -->
-        <div id="result" class="result-container"></div>
+        <!-- Clipboard suggestion banner -->
+        <div class="clipboard-banner" id="clipboardBanner" hidden>
+          <div class="clipboard-inner">
+            <svg class="clipboard-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
+            <div>
+              <div class="clipboard-label">Number in clipboard</div>
+              <div class="clipboard-number" id="clipboardNumber"></div>
+            </div>
+            <button class="clipboard-use-btn" id="clipboardUseBtn">Use</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- How it works -->
+      <section class="how-section">
+        <h2 class="how-title">How it works</h2>
+        <div class="steps">
+          <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-text">Pick your country or let us detect it</div>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-text">Enter any phone number</div>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-text">Tap Open — WhatsApp launches instantly</div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>Made with <span class="heart">♥</span> &nbsp;·&nbsp; <a href="https://github.com/g-akshay/walink" target="_blank" rel="noopener noreferrer">GitHub</a></p>
+    </footer>
+
+  </div>
+
+  <!-- Install prompt -->
+  <div class="install-toast" id="installToast" hidden>
+    <div class="install-toast-inner">
+      <div class="install-toast-icon">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M17.6 6.32A7.85 7.85 0 0 0 12.05 4C7.73 4 4.2 7.53 4.2 11.85a7.82 7.82 0 0 0 1.06 3.94L4 20l4.31-1.13a7.87 7.87 0 0 0 3.74.95h.01c4.32 0 7.84-3.53 7.84-7.85a7.82 7.82 0 0 0-2.3-5.65zM12.05 18.46a6.52 6.52 0 0 1-3.32-.91l-.24-.14-2.46.65.66-2.4-.16-.25a6.49 6.49 0 0 1-1-3.46c0-3.59 2.92-6.51 6.52-6.51a6.48 6.48 0 0 1 4.61 1.91 6.47 6.47 0 0 1 1.91 4.61c0 3.6-2.93 6.5-6.52 6.5zm3.57-4.88c-.2-.1-1.16-.57-1.34-.63-.18-.07-.31-.1-.44.1-.13.19-.5.63-.62.77-.11.13-.22.15-.42.05-.2-.1-.84-.31-1.6-.99a6.02 6.02 0 0 1-1.1-1.37c-.12-.2-.01-.3.09-.4.09-.09.2-.23.3-.35.1-.12.13-.2.2-.33.06-.13.03-.25-.02-.35-.05-.1-.44-1.05-.6-1.44-.16-.38-.32-.33-.44-.33-.11-.01-.24-.01-.37-.01-.13 0-.34.05-.52.25-.18.2-.68.66-.68 1.6s.7 1.86.79 1.99c.1.12 1.37 2.09 3.33 2.93.46.2.83.32 1.11.41.47.15.9.13 1.23.08.38-.06 1.16-.47 1.33-.93.16-.45.16-.84.11-.93-.05-.09-.18-.14-.38-.24z" fill="currentColor"/>
+        </svg>
+      </div>
+      <div class="install-toast-text">
+        <strong>Add WaLink to Home Screen</strong>
+        <span>Use it like a native app</span>
+      </div>
+      <button class="install-toast-btn" id="installToastBtn">Install</button>
+      <button class="install-toast-close" id="installToastClose" aria-label="Dismiss">✕</button>
     </div>
-    <script src="app.js"></script>
+  </div>
+
+  <script>
+'use strict';
+
+// --------------- Country Data ---------------
+// Ordered: India first, US second, then rest alphabetically
+const COUNTRIES = [
+  { name: 'India',           dial: '+91',  flag: '🇮🇳', code: 'IN', digits: 10 },
+  { name: 'United States',   dial: '+1',   flag: '🇺🇸', code: 'US', digits: 10 },
+  { name: 'Afghanistan',     dial: '+93',  flag: '🇦🇫', code: 'AF', digits: 9  },
+  { name: 'Albania',         dial: '+355', flag: '🇦🇱', code: 'AL', digits: 9  },
+  { name: 'Algeria',         dial: '+213', flag: '🇩🇿', code: 'DZ', digits: 9  },
+  { name: 'Argentina',       dial: '+54',  flag: '🇦🇷', code: 'AR', digits: 10 },
+  { name: 'Australia',       dial: '+61',  flag: '🇦🇺', code: 'AU', digits: 9  },
+  { name: 'Austria',         dial: '+43',  flag: '🇦🇹', code: 'AT', digits: 10 },
+  { name: 'Bangladesh',      dial: '+880', flag: '🇧🇩', code: 'BD', digits: 10 },
+  { name: 'Belgium',         dial: '+32',  flag: '🇧🇪', code: 'BE', digits: 9  },
+  { name: 'Brazil',          dial: '+55',  flag: '🇧🇷', code: 'BR', digits: 11 },
+  { name: 'Canada',          dial: '+1',   flag: '🇨🇦', code: 'CA', digits: 10 },
+  { name: 'Chile',           dial: '+56',  flag: '🇨🇱', code: 'CL', digits: 9  },
+  { name: 'China',           dial: '+86',  flag: '🇨🇳', code: 'CN', digits: 11 },
+  { name: 'Colombia',        dial: '+57',  flag: '🇨🇴', code: 'CO', digits: 10 },
+  { name: 'Czech Republic',  dial: '+420', flag: '🇨🇿', code: 'CZ', digits: 9  },
+  { name: 'Denmark',         dial: '+45',  flag: '🇩🇰', code: 'DK', digits: 8  },
+  { name: 'Egypt',           dial: '+20',  flag: '🇪🇬', code: 'EG', digits: 10 },
+  { name: 'Ethiopia',        dial: '+251', flag: '🇪🇹', code: 'ET', digits: 9  },
+  { name: 'Finland',         dial: '+358', flag: '🇫🇮', code: 'FI', digits: 9  },
+  { name: 'France',          dial: '+33',  flag: '🇫🇷', code: 'FR', digits: 9  },
+  { name: 'Germany',         dial: '+49',  flag: '🇩🇪', code: 'DE', digits: 11 },
+  { name: 'Ghana',           dial: '+233', flag: '🇬🇭', code: 'GH', digits: 9  },
+  { name: 'Greece',          dial: '+30',  flag: '🇬🇷', code: 'GR', digits: 10 },
+  { name: 'Hong Kong',       dial: '+852', flag: '🇭🇰', code: 'HK', digits: 8  },
+  { name: 'Hungary',         dial: '+36',  flag: '🇭🇺', code: 'HU', digits: 9  },
+  { name: 'Indonesia',       dial: '+62',  flag: '🇮🇩', code: 'ID', digits: 12 },
+  { name: 'Iran',            dial: '+98',  flag: '🇮🇷', code: 'IR', digits: 10 },
+  { name: 'Iraq',            dial: '+964', flag: '🇮🇶', code: 'IQ', digits: 10 },
+  { name: 'Ireland',         dial: '+353', flag: '🇮🇪', code: 'IE', digits: 9  },
+  { name: 'Israel',          dial: '+972', flag: '🇮🇱', code: 'IL', digits: 9  },
+  { name: 'Italy',           dial: '+39',  flag: '🇮🇹', code: 'IT', digits: 10 },
+  { name: 'Japan',           dial: '+81',  flag: '🇯🇵', code: 'JP', digits: 10 },
+  { name: 'Jordan',          dial: '+962', flag: '🇯🇴', code: 'JO', digits: 9  },
+  { name: 'Kenya',           dial: '+254', flag: '🇰🇪', code: 'KE', digits: 9  },
+  { name: 'Kuwait',          dial: '+965', flag: '🇰🇼', code: 'KW', digits: 8  },
+  { name: 'Malaysia',        dial: '+60',  flag: '🇲🇾', code: 'MY', digits: 10 },
+  { name: 'Mexico',          dial: '+52',  flag: '🇲🇽', code: 'MX', digits: 10 },
+  { name: 'Morocco',         dial: '+212', flag: '🇲🇦', code: 'MA', digits: 9  },
+  { name: 'Myanmar',         dial: '+95',  flag: '🇲🇲', code: 'MM', digits: 9  },
+  { name: 'Nepal',           dial: '+977', flag: '🇳🇵', code: 'NP', digits: 10 },
+  { name: 'Netherlands',     dial: '+31',  flag: '🇳🇱', code: 'NL', digits: 9  },
+  { name: 'New Zealand',     dial: '+64',  flag: '🇳🇿', code: 'NZ', digits: 9  },
+  { name: 'Nigeria',         dial: '+234', flag: '🇳🇬', code: 'NG', digits: 10 },
+  { name: 'Norway',          dial: '+47',  flag: '🇳🇴', code: 'NO', digits: 8  },
+  { name: 'Oman',            dial: '+968', flag: '🇴🇲', code: 'OM', digits: 8  },
+  { name: 'Pakistan',        dial: '+92',  flag: '🇵🇰', code: 'PK', digits: 10 },
+  { name: 'Philippines',     dial: '+63',  flag: '🇵🇭', code: 'PH', digits: 10 },
+  { name: 'Poland',          dial: '+48',  flag: '🇵🇱', code: 'PL', digits: 9  },
+  { name: 'Portugal',        dial: '+351', flag: '🇵🇹', code: 'PT', digits: 9  },
+  { name: 'Qatar',           dial: '+974', flag: '🇶🇦', code: 'QA', digits: 8  },
+  { name: 'Romania',         dial: '+40',  flag: '🇷🇴', code: 'RO', digits: 9  },
+  { name: 'Russia',          dial: '+7',   flag: '🇷🇺', code: 'RU', digits: 10 },
+  { name: 'Saudi Arabia',    dial: '+966', flag: '🇸🇦', code: 'SA', digits: 9  },
+  { name: 'Singapore',       dial: '+65',  flag: '🇸🇬', code: 'SG', digits: 8  },
+  { name: 'South Africa',    dial: '+27',  flag: '🇿🇦', code: 'ZA', digits: 9  },
+  { name: 'South Korea',     dial: '+82',  flag: '🇰🇷', code: 'KR', digits: 10 },
+  { name: 'Spain',           dial: '+34',  flag: '🇪🇸', code: 'ES', digits: 9  },
+  { name: 'Sri Lanka',       dial: '+94',  flag: '🇱🇰', code: 'LK', digits: 9  },
+  { name: 'Sweden',          dial: '+46',  flag: '🇸🇪', code: 'SE', digits: 9  },
+  { name: 'Switzerland',     dial: '+41',  flag: '🇨🇭', code: 'CH', digits: 9  },
+  { name: 'Tanzania',        dial: '+255', flag: '🇹🇿', code: 'TZ', digits: 9  },
+  { name: 'Thailand',        dial: '+66',  flag: '🇹🇭', code: 'TH', digits: 9  },
+  { name: 'Tunisia',         dial: '+216', flag: '🇹🇳', code: 'TN', digits: 8  },
+  { name: 'Turkey',          dial: '+90',  flag: '🇹🇷', code: 'TR', digits: 10 },
+  { name: 'UAE',             dial: '+971', flag: '🇦🇪', code: 'AE', digits: 9  },
+  { name: 'Uganda',          dial: '+256', flag: '🇺🇬', code: 'UG', digits: 9  },
+  { name: 'Ukraine',         dial: '+380', flag: '🇺🇦', code: 'UA', digits: 9  },
+  { name: 'United Kingdom',  dial: '+44',  flag: '🇬🇧', code: 'GB', digits: 10 },
+  { name: 'Venezuela',       dial: '+58',  flag: '🇻🇪', code: 'VE', digits: 10 },
+  { name: 'Vietnam',         dial: '+84',  flag: '🇻🇳', code: 'VN', digits: 9  },
+  { name: 'Yemen',           dial: '+967', flag: '🇾🇪', code: 'YE', digits: 9  },
+  { name: 'Zimbabwe',        dial: '+263', flag: '🇿🇼', code: 'ZW', digits: 9  },
+];
+
+// Country code → Country mapping
+const CC_MAP = Object.fromEntries(COUNTRIES.map(c => [c.code, c]));
+
+// --------------- State ---------------
+let selectedCountry = COUNTRIES[0]; // default India
+let dropdownOpen    = false;
+
+// --------------- DOM refs ---------------
+const phoneInput      = document.getElementById('phoneInput');
+const countryBtn      = document.getElementById('countryBtn');
+const selectedFlag    = document.getElementById('selectedFlag');
+const selectedDial    = document.getElementById('selectedDial');
+const countryDropdown = document.getElementById('countryDropdown');
+const countrySearch   = document.getElementById('countrySearch');
+const countryList     = document.getElementById('countryList');
+const openChatBtn     = document.getElementById('openChatBtn');
+const resultArea      = document.getElementById('resultArea');
+const resultLink      = document.getElementById('resultLink');
+const copyBtn         = document.getElementById('copyBtn');
+const errorMsg        = document.getElementById('errorMsg');
+const locationPill    = document.getElementById('locationPill');
+const locationPillTxt = document.getElementById('locationPillText');
+const clipboardBanner  = document.getElementById('clipboardBanner');
+const clipboardNumber  = document.getElementById('clipboardNumber');
+const clipboardUseBtn  = document.getElementById('clipboardUseBtn');
+const clipboardInvite  = document.getElementById('clipboardInvite');
+const installToast    = document.getElementById('installToast');
+const installToastBtn = document.getElementById('installToastBtn');
+const installToastClose = document.getElementById('installToastClose');
+
+// --------------- Init ---------------
+document.addEventListener('DOMContentLoaded', () => {
+  renderCountryList(COUNTRIES);
+  detectLocation();
+  checkClipboard();
+  registerSW();
+  setupInstallPrompt();
+});
+
+// --------------- Service Worker ---------------
+function registerSW() {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  }
+}
+
+// --------------- Geolocation / IP fallback ---------------
+function detectLocation() {
+  showLocationPill('Detecting your location…');
+
+  fetch('https://ip-api.com/json/?fields=countryCode,status')
+    .then(r => r.json())
+    .then(data => {
+      if (data.status === 'success' && data.countryCode) {
+        const country = CC_MAP[data.countryCode];
+        if (country) {
+          setCountry(country);
+          showLocationPill(`Detected: ${country.flag} ${country.name}`);
+          setTimeout(() => { locationPill.hidden = true; }, 3000);
+          return;
+        }
+      }
+      locationPill.hidden = true;
+    })
+    .catch(() => {
+      locationPill.hidden = true;
+    });
+}
+
+function showLocationPill(text) {
+  locationPillTxt.textContent = text;
+  locationPill.hidden = false;
+}
+
+// --------------- Clipboard ---------------
+async function checkClipboard() {
+  if (!navigator.clipboard || !navigator.clipboard.readText) return;
+
+  // Check permission state without triggering a prompt.
+  // If never asked ('prompt'), show an opt-in hint so the browser dialog
+  // appears only after the user intentionally taps "Paste a copied number".
+  if (navigator.permissions) {
+    try {
+      const perm = await navigator.permissions.query({ name: 'clipboard-read' });
+      if (perm.state === 'denied') return;
+      if (perm.state === 'prompt') {
+        clipboardInvite.hidden = false;
+        return;
+      }
+      // 'granted' — fall through and read silently
+    } catch (_) {
+      // permissions API unsupported; fall through and attempt read
+    }
+  }
+
+  readClipboard();
+}
+
+function readClipboard() {
+  navigator.clipboard.readText()
+    .then(text => {
+      const clean = text.trim().replace(/\D/g, '');
+      clipboardInvite.hidden = true;
+      if (clean.length >= 7 && clean.length <= 15) {
+        clipboardNumber.textContent = text.trim();
+        clipboardBanner.hidden = false;
+      }
+    })
+    .catch(() => { clipboardInvite.hidden = true; });
+}
+
+clipboardInvite && clipboardInvite.addEventListener('click', readClipboard);
+
+clipboardUseBtn && clipboardUseBtn.addEventListener('click', () => {
+  const raw = clipboardNumber.textContent.trim().replace(/\D/g, '');
+  // Strip leading country code if it matches selected
+  const dialDigits = selectedCountry.dial.replace('+', '');
+  const number = raw.startsWith(dialDigits) && raw.length > selectedCountry.digits
+    ? raw.slice(dialDigits.length)
+    : raw;
+  phoneInput.value = number;
+  clipboardBanner.hidden = true;
+  phoneInput.focus();
+  validateAndPreview();
+});
+
+// --------------- Country Dropdown ---------------
+function renderCountryList(list) {
+  countryList.innerHTML = '';
+  list.forEach(c => {
+    const li = document.createElement('li');
+    li.className = 'country-item' + (c.code === selectedCountry.code ? ' selected' : '');
+    li.setAttribute('role', 'option');
+    li.setAttribute('aria-selected', c.code === selectedCountry.code);
+    li.dataset.code = c.code;
+    li.innerHTML = `
+      <span class="country-item-flag">${c.flag}</span>
+      <span class="country-item-name">${c.name}</span>
+      <span class="country-item-dial">${c.dial}</span>
+    `;
+    li.addEventListener('click', () => {
+      setCountry(c);
+      closeDropdown();
+      phoneInput.focus();
+      validateAndPreview();
+    });
+    countryList.appendChild(li);
+  });
+}
+
+function setCountry(c) {
+  selectedCountry = c;
+  selectedFlag.textContent = c.flag;
+  selectedDial.textContent = c.dial;
+}
+
+function openDropdown() {
+  dropdownOpen = true;
+  countryDropdown.hidden = false;
+  countryBtn.setAttribute('aria-expanded', 'true');
+  countrySearch.value = '';
+  renderCountryList(COUNTRIES);
+  setTimeout(() => countrySearch.focus(), 80);
+}
+
+function closeDropdown() {
+  dropdownOpen = false;
+  countryDropdown.hidden = true;
+  countryBtn.setAttribute('aria-expanded', 'false');
+}
+
+countryBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  dropdownOpen ? closeDropdown() : openDropdown();
+});
+
+countrySearch.addEventListener('input', () => {
+  const q = countrySearch.value.toLowerCase();
+  const filtered = COUNTRIES.filter(c =>
+    c.name.toLowerCase().includes(q) ||
+    c.dial.includes(q) ||
+    c.code.toLowerCase().includes(q)
+  );
+  renderCountryList(filtered);
+});
+
+countrySearch.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeDropdown();
+});
+
+document.addEventListener('click', e => {
+  if (dropdownOpen && !countryDropdown.contains(e.target) && e.target !== countryBtn) {
+    closeDropdown();
+  }
+});
+
+// --------------- Phone Input ---------------
+phoneInput.addEventListener('input', () => {
+  const raw = phoneInput.value.replace(/\D/g, '');
+  phoneInput.value = raw;
+  validateAndPreview();
+});
+
+phoneInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter') handleOpenChat();
+});
+
+// --------------- Validation & Preview ---------------
+function validateAndPreview() {
+  const num = phoneInput.value.trim();
+  hideError();
+
+  if (!num) {
+    resultArea.hidden = true;
+    return;
+  }
+
+  if (num.length < 6) {
+    resultArea.hidden = true;
+    return;
+  }
+
+  const full = `${selectedCountry.dial}${num}`;
+  const url  = `https://wa.me/${full.replace('+', '')}`;
+  resultLink.textContent = url;
+  resultLink.href = url;
+  resultArea.hidden = false;
+}
+
+// --------------- Open Chat ---------------
+openChatBtn.addEventListener('click', handleOpenChat);
+
+function handleOpenChat() {
+  const num = phoneInput.value.trim();
+
+  if (!num) {
+    showError('Please enter a phone number.');
+    shakeInput();
+    return;
+  }
+
+  if (num.length < 6) {
+    showError('Number seems too short. Please check and try again.');
+    shakeInput();
+    return;
+  }
+
+  hideError();
+  const full = `${selectedCountry.dial}${num}`;
+  const url  = `https://wa.me/${full.replace('+', '')}`;
+  window.open(url, '_blank', 'noopener,noreferrer');
+}
+
+// --------------- Copy Button ---------------
+copyBtn.addEventListener('click', () => {
+  const url = resultLink.href;
+  if (!url) return;
+  navigator.clipboard.writeText(url).then(() => {
+    copyBtn.classList.add('copied');
+    copyBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`;
+    setTimeout(() => {
+      copyBtn.classList.remove('copied');
+      copyBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
+    }, 2000);
+  }).catch(() => {});
+});
+
+// --------------- Error helpers ---------------
+function showError(msg) {
+  errorMsg.textContent = msg;
+  errorMsg.hidden = false;
+}
+
+function hideError() {
+  errorMsg.hidden = true;
+}
+
+function shakeInput() {
+  const group = document.getElementById('phoneInputGroup');
+  group.style.animation = 'none';
+  group.offsetHeight; // reflow
+  group.style.animation = 'shake .4s cubic-bezier(.36,.07,.19,.97) both';
+  group.addEventListener('animationend', () => { group.style.animation = ''; }, { once: true });
+}
+
+// --------------- PWA Install Prompt ---------------
+let deferredPrompt = null;
+
+function setupInstallPrompt() {
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferredPrompt = e;
+    setTimeout(() => {
+      if (!window.matchMedia('(display-mode: standalone)').matches) {
+        installToast.hidden = false;
+      }
+    }, 3000);
+  });
+
+  installToastBtn.addEventListener('click', () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then(() => {
+        deferredPrompt = null;
+        installToast.hidden = true;
+      });
+    }
+  });
+
+  installToastClose.addEventListener('click', () => {
+    installToast.hidden = true;
+  });
+}
+  </script>
 </body>
 </html>
